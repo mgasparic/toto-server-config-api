@@ -1,0 +1,37 @@
+[
+	{
+		"package": "com.softinit.iquitos.mainapp",
+		"country_code": "US",
+		"percentile_min": 0,
+		"percentile_max": 25,
+		"main_sku": "rdm_premium_v3_020_trial_7d_monthly"
+	},
+	{
+		"package": "com.softinit.iquitos.mainapp",
+		"country_code": "US",
+		"percentile_min": 25,
+		"percentile_max": 50,
+		"main_sku": "rdm_premium_v3_030_trial_7d_monthly"
+	},
+	{
+		"package": "com.softinit.iquitos.mainapp",
+		"country_code": "US",
+		"percentile_min": 50,
+		"percentile_max": 75,
+		"main_sku": "rdm_premium_v3_100_trial_7d_yearly"
+	},
+	{
+		"package": "com.softinit.iquitos.mainapp",
+		"country_code": "US",
+		"percentile_min": 75,
+		"percentile_max": 100,
+		"main_sku": "rdm_premium_v3_150_trial_7d_yearly"
+	},
+	{
+		"package": "com.softinit.iquitos.mainapp",
+		"country_code": "ZZ",
+		"percentile_min": 0,
+		"percentile_max": 100,
+		"main_sku": "rdm_premium_v3_050_trial_7d_yearly"
+	}
+]

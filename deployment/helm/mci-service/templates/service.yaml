@@ -1,0 +1,27 @@
+apiVersion: networking.gke.io/v1
+kind: MultiClusterService
+metadata:
+  name: {{ .Values.service }}-mcs
+spec:
+  template:
+    spec:
+      selector:
+        app: {{ .Values.service }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.port }}
+          targetPort: {{ .Values.port }}
+---
+apiVersion: networking.gke.io/v1
+kind: MultiClusterIngress
+metadata:
+  name: {{ .Values.service }}-ingress
+  annotations:
+    networking.gke.io/static-ip: {{ .Values.static.ip }}
+    networking.gke.io/pre-shared-certs: {{ .Values.certificate.name }}
+spec:
+  template:
+    spec:
+      backend:
+        serviceName: {{ .Values.service }}-mcs
+        servicePort: {{ .Values.port }}

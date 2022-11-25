@@ -47,9 +47,9 @@ func TestOffering(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("test %d", i), func(t *testing.T) {
 			router := gin.Default()
-			router.GET("/:package", Offering)
+			router.GET("/:package/:country", Offering)
 			recorder := httptest.NewRecorder()
-			request, _ := http.NewRequest("GET", fmt.Sprintf("/%s", tt.packageName), nil)
+			request, _ := http.NewRequest("GET", fmt.Sprintf("/%s/%s", tt.packageName, tt.countryCode), nil)
 			router.ServeHTTP(recorder, request)
 			retBody, _ := io.ReadAll(recorder.Body)
 			retCode := recorder.Code

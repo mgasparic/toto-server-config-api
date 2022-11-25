@@ -10,7 +10,7 @@ import (
 func Offering(ctx *gin.Context) {
 	mainSku, ok := configurations.RandomMainSku(commons.ConfigurationRequirement{
 		Package:     commons.Package(ctx.Param("package")),
-		CountryCode: commons.CountryCode(ctx.GetHeader("X-Appengine-Country")),
+		CountryCode: commons.CountryCode(ctx.Param("country")),
 	})
 	if !ok {
 		ctx.AbortWithStatus(http.StatusNoContent)

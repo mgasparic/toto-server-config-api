@@ -4,7 +4,9 @@
 *.so
 *.dylib
 *.env
-*.test
+*.test*
 *.out
+.run
 .idea
 .vscode/
+.terraform*

@@ -4,15 +4,21 @@ import (
 	"api/internal/commons"
 	"api/internal/configurations"
 	"api/internal/handlers"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/kelseyhightower/envconfig"
 	"log"
+	"net/http"
+	"time"
 )
 
 type EnvVars struct {
 	ServicePort        int    `envconfig:"SERVICE_PORT" default:"9000"`
 	ServiceEnvironment string `envconfig:"SERVICE_ENVIRONMENT" default:"local"`
+	ConfigTableUrl     string `envconfig:"CONFIG_TABLE_URL"`
+	AuthorizationJwt   string `envconfig:"AUTHORIZATION_JWT"`
 }
 
 func main() {
@@ -24,72 +30,54 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// todo rewrite:
-	configurations.UpdateConfigurationTable(commons.ConfigurationTable{
-		{
-			commons.ConfigurationRequirement{
-				Package:     "com.softinit.iquitos.mainapp",
-				CountryCode: "US",
-			},
-			commons.ConfigurationChance{
-				PercentileMin: 0,
-				PercentileMax: 25,
-				MainSku:       "rdm_premium_v3_020_trial_7d_monthly",
-			},
-		},
-		{
-			commons.ConfigurationRequirement{
-				Package:     "com.softinit.iquitos.mainapp",
-				CountryCode: "US",
-			},
-			commons.ConfigurationChance{
-				PercentileMin: 25,
-				PercentileMax: 50,
-				MainSku:       "rdm_premium_v3_030_trial_7d_monthly",
-			},
-		},
-		{
-			commons.ConfigurationRequirement{
-				Package:     "com.softinit.iquitos.mainapp",
-				CountryCode: "US",
-			},
-			commons.ConfigurationChance{
-				PercentileMin: 50,
-				PercentileMax: 75,
-				MainSku:       "rdm_premium_v3_100_trial_7d_yearly",
-			},
-		},
-		{
-			commons.ConfigurationRequirement{
-				Package:     "com.softinit.iquitos.mainapp",
-				CountryCode: "US",
-			},
-			commons.ConfigurationChance{
-				PercentileMin: 75,
-				PercentileMax: 100,
-				MainSku:       "rdm_premium_v3_150_trial_7d_yearly",
-			},
-		},
-		{
-			commons.ConfigurationRequirement{
-				Package:     "com.softinit.iquitos.mainapp",
-				CountryCode: "ZZ",
-			},
-			commons.ConfigurationChance{
-				PercentileMin: 0,
-				PercentileMax: 100,
-				MainSku:       "rdm_premium_v3_050_trial_7d_yearly",
-			},
-		},
-	})
+	done := make(chan struct{})
+	go func() {
+		doneSignaled := false
+		for {
+			connection, _, err := websocket.DefaultDialer.Dial(envVars.ConfigTableUrl, http.Header{"Authorization": []string{fmt.Sprintf("Bearer %s", envVars.AuthorizationJwt)}})
+			if err != nil {
+				log.Print(err)
+				time.Sleep(time.Minute)
+				continue
+			}
+			for {
+				err := connection.SetReadDeadline(time.Time{})
+				if err != nil {
+					log.Print(err)
+					break
+				}
+				messageType, message, err := connection.ReadMessage()
+				if err != nil {
+					log.Print(err)
+					break
+				}
+				if messageType == websocket.TextMessage {
+					var configurationTable commons.ConfigurationTable
+					err = json.Unmarshal(message, &configurationTable)
+					if err != nil {
+						log.Fatal(err)
+					}
+					configurations.UpdateConfigurationTable(configurationTable)
+					if !doneSignaled {
+						doneSignaled = true
+						close(done)
+					}
+				}
+			}
+			_ = connection.Close()
+		}
+	}()
+	<-done
 
 	if envVars.ServiceEnvironment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	router := gin.Default()
-	service := router.Group("/distributor")
-	service.GET("/offering/:package", handlers.Offering)
+	router.GET("/offering/:package/:country", handlers.Offering)
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.AbortWithStatus(http.StatusOK)
+	})
 
 	log.Fatal(router.Run(fmt.Sprintf(":%d", envVars.ServicePort)))
 }

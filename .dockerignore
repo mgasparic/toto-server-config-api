@@ -1,0 +1,7 @@
+.dockerignore
+deployments/
+docs/
+scripts/
+test/
+.gitignore
+README.md

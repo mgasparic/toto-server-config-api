@@ -1,0 +1,6 @@
+service:
+port:
+static:
+  ip:
+certificate:
+  name:
