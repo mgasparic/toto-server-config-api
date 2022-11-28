@@ -1,0 +1,5 @@
+service: proxy
+port: 80
+env:
+volumeMounts:
+volumes:

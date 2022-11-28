@@ -1,0 +1,13 @@
+service: remote-config
+port: 80
+env:
+  - name: SERVICE_PORT
+    value: 80
+  - name: SERVICE_ENVIRONMENT
+    value: production
+  - name: CONFIG_TABLE_URL
+    value: 'ws://updater.sharedtensors.com/subscription'
+  - name: AUTHORIZATION_JWT
+    value: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.e30.vLLpdY6tB-h199F-TGSYLzsnAo9xQj-JeUTSJW4hS8d75fdbfynhAtTSCOTdlCr3yH8oQ1jDCSsVyjxFuTxu1SfdJZKqRf_1qpdkSI9zXsrETCqBOlUrzYv-n29Uriiv97BAqeGKNIYWNUcNunib8XihdoD0DoGJOOOwQepNOHv1CFRzicLVhewTbpLPtK6PVYEFM1ifZoOdMFcoh4tQ8PW3WdzQrHLW5-IzuF3GJEWGT70_irBiXDBPjPEBPOzXaWe7oZu4WMmPp32P-0VLOHgpoe_9TbRWjMRoiVxTAAf6d_HNg70DQJnO6tPOrG98Uw0IHEeOfyrljYv5Cv1tig'
+volumeMounts:
+volumes:

@@ -1,3 +1,21 @@
 service:
-image:
 port:
+env:
+  - name:
+    value:
+volumeMounts:
+  - name:
+    mountPath:
+volumes:
+  - name:
+    type:
+    configMapName:
+    configMapKey:
+    configMapPath:
+    secretName:
+    secretKey:
+    secretPath:
+instance:
+  replicas:
+docker:
+  image:

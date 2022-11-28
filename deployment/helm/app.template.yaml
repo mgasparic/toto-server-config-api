@@ -1,7 +1,0 @@
-runtime: go116
-
-main: ./cmd/proxy/main.go
-
-env_variables:
-  PORT: "8080"
-  HOST_URL: "{{.HostUrl}}"

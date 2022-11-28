@@ -18,7 +18,8 @@ import (
 type EnvVars struct {
 	ServicePort                          int    `envconfig:"SERVICE_PORT" default:"8080"`
 	ServiceEnvironment                   string `envconfig:"SERVICE_ENVIRONMENT" default:"local"`
-	PersistentConfigurationTableFilePath string `envconfig:"CONFIGURATION_TABLE_PATH"`
+	InitialConfigurationTableFilePath    string `envconfig:"INITIAL_CONFIGURATION_TABLE_PATH"`
+	PersistentConfigurationTableFilePath string `envconfig:"PERSISTENT_CONFIGURATION_TABLE_PATH"`
 	ConfigurationJwtPublicKeyPath        string `envconfig:"CONFIGURATION_JWT_PUBLIC_KEY_PATH"`
 	SubscriptionJwtPublicKeyPath         string `envconfig:"SUBSCRIPTION_JWT_PUBLIC_KEY_PATH"`
 }
@@ -34,7 +35,12 @@ func main() {
 
 	persistentConfigurationTable, err := os.ReadFile(envVars.PersistentConfigurationTableFilePath)
 	if err != nil {
-		log.Fatal(err)
+		initialConfigurationTable, err := os.ReadFile(envVars.InitialConfigurationTableFilePath)
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			persistentConfigurationTable = initialConfigurationTable
+		}
 	}
 
 	var configurationTable commons.ConfigurationTable

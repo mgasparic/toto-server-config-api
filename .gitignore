@@ -5,8 +5,10 @@
 *.dylib
 *.env
 *.test*
-*.out
 .run
 .idea
 .vscode/
+terraform.tfstate*
 .terraform*
+nginx-*.conf
+app.yaml

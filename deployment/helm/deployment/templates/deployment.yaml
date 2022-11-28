@@ -5,6 +5,7 @@ metadata:
   labels:
     app: {{ .Values.service }}
 spec:
+  replicas: {{ .Values.instance.replicas }}
   selector:
     matchLabels:
       app: {{ .Values.service }}
@@ -15,6 +16,42 @@ spec:
     spec:
       containers:
         - name: {{ .Values.service }}-container
-          image: {{ .Values.image }}
+          image: {{ .Values.docker.image }}
           ports:
             - containerPort: {{ .Values.port }}
+          {{- if .Values.env }}
+          env:
+            {{- range $envKey, $envData := .Values.env }}
+            - name: {{ $envData.name }}
+              value: '{{ $envData.value }}'
+            {{- end }}
+          {{- end }}
+          {{- if .Values.volumeMounts }}
+          volumeMounts:
+            {{- range $volumeMountKey, $volumeMountData := .Values.volumeMounts }}
+            - name: {{ $volumeMountData.name }}
+              mountPath: {{ $volumeMountData.mountPath }}
+            {{- end }}
+          {{- end }}
+      volumes:
+        {{- range $volumeKey, $volumeData := .Values.volumes }}
+        - name: {{ $volumeData.name }}
+          {{- if eq $volumeData.type "init" }}
+          configMap:
+            name: {{ $volumeData.configMapName }}
+            items:
+              - key: {{ $volumeData.configMapKey }}
+                path: {{ $volumeData.configMapPath }}
+          {{- end }}
+          {{- if eq $volumeData.type "persistent" }}
+          persistentVolumeClaim:
+            claimName: pvc
+          {{- end }}
+          {{- if eq $volumeData.type "secret" }}
+          secret:
+            secretName: {{ $volumeData.secretName }}
+            items:
+              - key: {{ $volumeData.secretKey }}
+                path: {{ $volumeData.secretPath }}
+          {{- end }}
+        {{- end }}

@@ -1,3 +1,0 @@
-service: proxy
-image: gcr.io/central-gke-gae/zippo.apps/us-proxy:1.0.0
-port: 80

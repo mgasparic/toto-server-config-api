@@ -1,0 +1,35 @@
+service: updater
+port: 80
+env:
+  - name: SERVICE_PORT
+    value: 80
+  - name: SERVICE_ENVIRONMENT
+    value: production
+  - name: INITIAL_CONFIGURATION_TABLE_PATH
+    value: '/init/configurationTable.json'
+  - name: PERSISTENT_CONFIGURATION_TABLE_PATH
+    value: '/persistent/configurationTable.json'
+  - name: CONFIGURATION_JWT_PUBLIC_KEY_PATH
+    value: '/jwt/public.pem'
+  - name: SUBSCRIPTION_JWT_PUBLIC_KEY_PATH
+    value: '/jwt/public.pem'
+volumeMounts:
+  - name: init
+    mountPath: /init
+  - name: persistent
+    mountPath: /persistent
+  - name: jwt
+    mountPath: /jwt
+volumes:
+  - name: init
+    type: init
+    configMapName: configs
+    configMapKey: table
+    configMapPath: configurationTable.json
+  - name: persistent
+    type: persistent
+  - name: jwt
+    type: secret
+    secretName: jwts
+    secretKey: public
+    secretPath: public.pem

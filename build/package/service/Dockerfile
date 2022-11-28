@@ -1,7 +1,7 @@
 FROM golang:1.19.3-alpine AS builder
 WORKDIR /build
 ARG service
-COPY .. .
+COPY . .
 WORKDIR /build/cmd/$service
 RUN CGO_ENABLED=0 GOOS=linux go build
 

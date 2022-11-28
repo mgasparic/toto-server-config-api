@@ -1,0 +1,3 @@
+apiVersion: v2
+name: persistent-storage
+version: 1.0.0
